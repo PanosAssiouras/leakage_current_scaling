@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leakage Current Temperature Scaling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Leakage Current Temperature Scaling</h1>
+        <label for="I_leak_ref">Leakage Current at Reference Temperature (A):</label>
+        <input type="number" id="I_leak_ref" placeholder="e.g., 1e-9" step="any" required>
+
+        <label for="T_ref">Reference Temperature (K):</label>
+        <input type="number" id="T_ref" placeholder="e.g., 293.15" required>
+
+        <label for="T_new">New Temperature (K):</label>
+        <input type="number" id="T_new" placeholder="e.g., 273.15" required>
+
+        <button onclick="calculateLeakageCurrent()">Calculate Scaled Leakage Current</button>
+
+        <h2>Result</h2>
+        <p id="result">Scaled Leakage Current: <span id="I_leak_new"></span> A</p>
+    </div>
+
+    <script>
+        function calculateLeakageCurrent() {
+            const I_leak_ref = parseFloat(document.getElementById("I_leak_ref").value);
+            const T_ref = parseFloat(document.getElementById("T_ref").value);
+            const T_new = parseFloat(document.getElementById("T_new").value);
+            const E_g = 1.12; // Bandgap energy in eV
+            const k = 8.617e-5; // Boltzmann constant in eV/K
+
+            // Check if inputs are valid
+            if (isNaN(I_leak_ref) || isNaN(T_ref) || isNaN(T_new)) {
+                alert("Please enter valid numbers for all inputs.");
+                return;
+            }
+
+            // Calculate the scaling factor and the new leakage current
+            const scalingFactor = Math.exp((E_g / (2 * k)) * (1 / T_ref - 1 / T_new));
+            const I_leak_new = I_leak_ref * scalingFactor;
+
+            // Display the result
+            document.getElementById("I_leak_new").textContent = I_leak_new.toExponential(3);
+        }
+    </script>
+</body>
+</html>
+
